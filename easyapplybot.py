@@ -161,7 +161,7 @@ class EasyApplyBot:
 
                 # sleep to make sure everything loads, add random to make us look human.
                 randoTime: float = random.uniform(3.5, 4.9)
-                log.debug(f"Sleeping for {round(randoTime, 1)}")
+                log.debug(f"Sleeping for {round(randoTime, 1)} seconds")
                 time.sleep(randoTime)
                 self.load_page(sleep=1)
 
@@ -316,7 +316,7 @@ class EasyApplyBot:
 
 
 
-        input_field = self.browser.find_element("xpath", "//input[contains(@name,'phoneNumber')]")
+        input_field = self.browser.find_element("xpath", "//input[contains(@aria-describedby,'phoneNumber')]")
 
 
         if input_field:
