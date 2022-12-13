@@ -109,10 +109,13 @@ class EasyApplyBot:
             user_field.send_keys(username)
             user_field.send_keys(Keys.TAB)
             time.sleep(2)
+            log.debug("Sleep 10")
             pw_field.send_keys(password)
             time.sleep(2)
+            log.debug("Sleep 11")
             login_button.click()
             time.sleep(3)
+            log.debug("Sleep 12")
         except TimeoutException:
             log.info("TimeoutException! Username/password field or login button not found")
 
@@ -163,6 +166,7 @@ class EasyApplyBot:
                 randoTime: float = random.uniform(3.5, 4.9)
                 log.debug(f"Sleeping for {round(randoTime, 1)} seconds")
                 time.sleep(randoTime)
+                log.debug("Sleep 13")
                 self.load_page(sleep=1)
 
                 # LinkedIn displays the search results in a scrollable <div> on the left side, we have to scroll to its bottom
@@ -175,6 +179,7 @@ class EasyApplyBot:
                 #     self.browser.execute_script("arguments[0].scrollTo(0, {})".format(i), scrollresults)
 
                 time.sleep(1)
+                log.debug("Sleep 14")
 
                 # get job links, (the following are actually the job card objects)
                 links = self.browser.find_elements("xpath",
@@ -231,6 +236,7 @@ class EasyApplyBot:
                             log.info("Clicking the EASY apply button")
                             button.click()
                             time.sleep(3)
+                            log.debug("Sleep 15")
                             self.fill_out_phone_number()
                             result: bool = self.send_resume()
                             count_application += 1
@@ -251,6 +257,7 @@ class EasyApplyBot:
                                     Time for a nap - see you in:{int(sleepTime / 60)} min
                                 ****************************************\n\n""")
                         time.sleep(sleepTime)
+                        log.debug("Sleep 16")
 
                     # go to new page if all jobs are done
                     if count_job == len(jobIDs):
@@ -279,6 +286,11 @@ class EasyApplyBot:
         company = re_extract(browserTitle.split(' | ')[1], r"(\w.*)")
 
         toWrite: list = [timestamp, jobID, job, company, attempted, result]
+        if not os.path.exists('./'+self.filename):
+            with open(self.filename, 'w') as f:
+                writer = csv.writer(f)
+                writer.writerow(['timestamp', 'jobID', 'job', 'company', 'attempted', 'result'])
+
         with open(self.filename, 'a') as f:
             writer = csv.writer(f)
             writer.writerow(toWrite)
@@ -323,6 +335,7 @@ class EasyApplyBot:
             input_field.clear()
             input_field.send_keys(self.phone_number)
             time.sleep(random.uniform(4.5, 6.5))
+            log.debug("Sleep 1")
         
 
 
@@ -346,6 +359,7 @@ class EasyApplyBot:
             if button:
                 button.click()
                 time.sleep(random.uniform(1.5, 2.5))
+                log.debug("Sleep 2")
                 # if i in (3, 4):
                 #     submitted = True
                 # if i != 2:
@@ -365,6 +379,7 @@ class EasyApplyBot:
 
         try:
             time.sleep(random.uniform(1.5, 2.5))
+            log.debug("Sleep 3")
             next_locater = (By.CSS_SELECTOR,
                             "button[aria-label='Continue to next step']")
             review_locater = (By.CSS_SELECTOR,
@@ -374,7 +389,7 @@ class EasyApplyBot:
             submit_application_locator = (By.CSS_SELECTOR,
                                           "button[aria-label='Submit application']")
             error_locator = (By.CSS_SELECTOR,
-                             "p[data-test-form-element-error-message='true']")
+                             "div[data-test-form-element-error-messages]")
             upload_locator = (By.CSS_SELECTOR, "input[name='file']")
             follow_locator = (By.CSS_SELECTOR, "label[for='follow-company-checkbox']")
 
@@ -398,6 +413,7 @@ class EasyApplyBot:
 
                     # input_button[0].send_keys(self.cover_letter_loctn)
                     time.sleep(random.uniform(4.5, 6.5))
+                    log.debug("Sleep 4")
 
                 # Click Next or submitt button if possible
                 button: None = None
@@ -417,6 +433,7 @@ class EasyApplyBot:
                     if button:
                         button.click()
                         time.sleep(random.uniform(1.5, 2.5))
+                        log.debug("Sleep 5")
                         if i in (3, 4):
                             submitted = True
                         if i != 2:
@@ -429,6 +446,7 @@ class EasyApplyBot:
                     break
 
             time.sleep(random.uniform(1.5, 2.5))
+            log.debug("Sleep 6")
 
 
         except Exception as e:
@@ -444,10 +462,12 @@ class EasyApplyBot:
             self.browser.execute_script("window.scrollTo(0," + str(scroll_page) + " );")
             scroll_page += 200
             time.sleep(sleep)
+            log.debug("Sleep 7")
 
         if sleep != 1:
             self.browser.execute_script("window.scrollTo(0,0);")
             time.sleep(sleep * 3)
+            log.debug("Sleep 8")
 
         page = BeautifulSoup(self.browser.page_source, "lxml")
         return page
@@ -460,6 +480,7 @@ class EasyApplyBot:
         pyautogui.press('esc')
         pyautogui.keyUp('ctrl')
         time.sleep(0.5)
+        log.debug("Sleep 9")
         pyautogui.press('esc')
 
     def next_jobs_page(self, position, location, jobs_per_page):
