@@ -77,7 +77,7 @@ class EasyApplyBot:
                                 encoding='utf-8')
 
             df['timestamp'] = pd.to_datetime(df['timestamp'], format="%Y-%m-%d %H:%M:%S")
-            df = df[df['timestamp'] > (datetime.now() - timedelta(days=2))]
+            df = df[df['timestamp'] > (datetime.now() - timedelta(days=10))]
             jobIDs: list = list(df.jobID)
             log.info(f"{len(jobIDs)} jobIDs found")
             return jobIDs
@@ -227,7 +227,6 @@ class EasyApplyBot:
                             log.info("Clicking the EASY apply button")
                             button.click()
                             time.sleep(3)
-                            log.debug("Sleep 15")
                             self.fill_out_phone_number()
                             result: bool = self.send_resume()
                             count_application += 1
@@ -248,7 +247,6 @@ class EasyApplyBot:
                                     Time for a nap - see you in:{int(sleepTime / 60)} min
                                 ****************************************\n\n""")
                         time.sleep(sleepTime)
-                        log.debug("Sleep 16")
 
                     # go to new page if all jobs are done
                     if count_job == len(jobIDs):
@@ -326,7 +324,6 @@ class EasyApplyBot:
             input_field.clear()
             input_field.send_keys(self.phone_number)
             time.sleep(random.uniform(4.5, 6.5))
-            log.debug("Sleep 1")
         
 
 
@@ -350,7 +347,6 @@ class EasyApplyBot:
             if button:
                 button.click()
                 time.sleep(random.uniform(1.5, 2.5))
-                log.debug("Sleep 2")
                 # if i in (3, 4):
                 #     submitted = True
                 # if i != 2:
@@ -370,7 +366,6 @@ class EasyApplyBot:
 
         try:
             time.sleep(random.uniform(1.5, 2.5))
-            log.debug("Sleep 3")
             next_locater = (By.CSS_SELECTOR,
                             "button[aria-label='Continue to next step']")
             review_locater = (By.CSS_SELECTOR,
@@ -437,7 +432,6 @@ class EasyApplyBot:
                     break
 
             time.sleep(random.uniform(1.5, 2.5))
-            log.debug("Sleep 6")
 
 
         except Exception as e:
@@ -453,12 +447,10 @@ class EasyApplyBot:
             self.browser.execute_script("window.scrollTo(0," + str(scroll_page) + " );")
             scroll_page += 200
             time.sleep(sleep)
-            log.debug("Sleep 7")
 
         if sleep != 1:
             self.browser.execute_script("window.scrollTo(0,0);")
             time.sleep(sleep * 3)
-            log.debug("Sleep 8")
 
         page = BeautifulSoup(self.browser.page_source, "lxml")
         return page
@@ -471,7 +463,6 @@ class EasyApplyBot:
         pyautogui.press('esc')
         pyautogui.keyUp('ctrl')
         time.sleep(0.5)
-        log.debug("Sleep 9")
         pyautogui.press('esc')
 
     def next_jobs_page(self, position, location, jobs_per_page):
