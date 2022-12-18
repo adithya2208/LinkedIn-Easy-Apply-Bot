@@ -399,7 +399,6 @@ class EasyApplyBot:
 
                     # input_button[0].send_keys(self.cover_letter_loctn)
                     time.sleep(random.uniform(4.5, 6.5))
-                    log.debug("Sleep 4")
 
                 # Click Next or submitt button if possible
                 button: None = None
@@ -419,7 +418,6 @@ class EasyApplyBot:
                     if button:
                         button.click()
                         time.sleep(random.uniform(1.5, 2.5))
-                        log.debug("Sleep 5")
                         if i in (3, 4):
                             submitted = True
                         if i != 2:
