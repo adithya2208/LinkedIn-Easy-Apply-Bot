@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait  # type: ignore 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
@@ -40,9 +40,8 @@ def setupLogger() -> None:
 
 
 class EasyApplyBot:
-    setupLogger()
     # MAX_SEARCH_TIME is 10 hours by default, feel free to modify it
-    MAX_SEARCH_TIME = 10 * 60 * 60
+    MAX_SEARCH_TIME:int = 10 * 60 * 60
 
     def __init__(self,
                  username,
@@ -65,17 +64,17 @@ class EasyApplyBot:
         self.browser = driver
         self.wait = WebDriverWait(self.browser, 30)
         self.blacklist = blacklist
-        self.blackListTitles = blackListTitles
+        self.blackListTitles = blackListTitles  
         self.start_linkedin(username, password)
         self.phone_number = phone_number
 
     def get_appliedIDs(self, filename) -> list | None:
         try:
-            df = pd.read_csv(filename,
-                             header=None,
-                             names=['timestamp', 'jobID', 'job', 'company', 'attempted', 'result'],
-                             lineterminator='\n',
-                             encoding='utf-8')
+            df: pd.DataFrame = pd.read_csv(filename,
+                                header=0,
+                                names=['timestamp', 'jobID', 'job', 'company', 'attempted', 'result'],
+                                lineterminator='\n',
+                                encoding='utf-8')
 
             df['timestamp'] = pd.to_datetime(df['timestamp'], format="%Y-%m-%d %H:%M:%S")
             df = df[df['timestamp'] > (datetime.now() - timedelta(days=2))]
@@ -99,7 +98,7 @@ class EasyApplyBot:
         return options
 
     def start_linkedin(self, username, password) -> None:
-        log.info("Logging in.....Please wait :)  ")
+        log.info("Logging in.....Please wait   ")
         self.browser.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
         try:
             user_field = self.browser.find_element("id","username")
@@ -109,24 +108,18 @@ class EasyApplyBot:
             user_field.send_keys(username)
             user_field.send_keys(Keys.TAB)
             time.sleep(2)
-            log.debug("Sleep 10")
             pw_field.send_keys(password)
             time.sleep(2)
-            log.debug("Sleep 11")
             login_button.click()
             time.sleep(3)
-            log.debug("Sleep 12")
         except TimeoutException:
             log.info("TimeoutException! Username/password field or login button not found")
-
-    def fill_data(self) -> None:
         self.browser.set_window_size(1, 1)
         self.browser.set_window_position(2000, 2000)
 
+
     def start_apply(self, positions, locations) -> None:
         start: float = time.time()
-        self.fill_data()
-
         
 
         combos: list = []
@@ -166,7 +159,6 @@ class EasyApplyBot:
                 randoTime: float = random.uniform(3.5, 4.9)
                 log.debug(f"Sleeping for {round(randoTime, 1)} seconds")
                 time.sleep(randoTime)
-                log.debug("Sleep 13")
                 self.load_page(sleep=1)
 
                 # LinkedIn displays the search results in a scrollable <div> on the left side, we have to scroll to its bottom
@@ -179,7 +171,6 @@ class EasyApplyBot:
                 #     self.browser.execute_script("arguments[0].scrollTo(0, {})".format(i), scrollresults)
 
                 time.sleep(1)
-                log.debug("Sleep 14")
 
                 # get job links, (the following are actually the job card objects)
                 links = self.browser.find_elements("xpath",
@@ -202,7 +193,7 @@ class EasyApplyBot:
                             temp = link.get_attribute("data-job-id")
                             jobID = temp.split(":")[-1]
                             IDs.append(int(jobID))
-                IDs: list = set(IDs)
+                IDs: list = set(IDs)  # type: ignore 
 
                 # remove already applied jobs
                 before: int = len(IDs)
@@ -299,7 +290,7 @@ class EasyApplyBot:
 
         job: str = 'https://www.linkedin.com/jobs/view/' + str(jobID)
         self.browser.get(job)
-        self.job_page = self.load_page(sleep=0.5)
+        self.job_page = self.load_page(sleep=0.5)  # type: ignore 
         return self.job_page
 
     def get_easy_apply_button(self):
@@ -497,10 +488,11 @@ class EasyApplyBot:
 
 
 if __name__ == '__main__':
+    setupLogger()
 
     with open("config.yaml", 'r') as stream:
         try:
-            parameters = yaml.safe_load(stream)
+            parameters: dict = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             raise exc
 
@@ -517,8 +509,8 @@ if __name__ == '__main__':
 
     log.info({k: parameters[k] for k in parameters.keys() if k not in ['username', 'password']})
 
-    output_filename: list = [f for f in parameters.get('output_filename', ['output.csv']) if f != None]
-    output_filename: list = output_filename[0] if len(output_filename) > 0 else 'output.csv'
+    output_filename: str = parameters.get('output_filename', 'output.csv') 
+
     blacklist = parameters.get('blacklist', [])
     blackListTitles = parameters.get('blackListTitles', [])
 
@@ -530,7 +522,7 @@ if __name__ == '__main__':
                        parameters['password'],
                        parameters['phone_number'],
                        uploads=uploads,
-                       filename=output_filename,
+                       filename=output_filename, # type: ignore 
                        blacklist=blacklist,
                        blackListTitles=blackListTitles
                        )

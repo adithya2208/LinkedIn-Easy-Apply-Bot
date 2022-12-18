@@ -1,6 +1,6 @@
 username: 
 password: 
-phone_number:
+phone_number: 
 
 positions:
 - Data Scientist
@@ -13,13 +13,12 @@ locations:
 
 # --------- Optional Parameters -------
 # uploads:
-#  Resume: # PATH TO Resume 
-#  Cover Letter: # PATH TO cover letter
-#  Photo: # PATH TO photo
+#  Resume: 32
+#  Cover Letter: 45
+#  Photo: 67
 
 
-# output_filename:
-# - # PATH TO OUTPUT FILE (default output.csv)
+# output_filename: PATH TO OUTPUT FILE (default output.csv)
 
 # blacklist:
 # - # Company names you want to ignore
