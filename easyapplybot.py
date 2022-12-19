@@ -148,7 +148,6 @@ class EasyApplyBot:
         self.browser.set_window_position(1, 1)
         self.browser.maximize_window()
         self.browser, _ = self.next_jobs_page(position, location, jobs_per_page)
-        log.info("Looking for jobs.. Please wait..")
 
         while time.time() - start_time < self.MAX_SEARCH_TIME:
             try:
