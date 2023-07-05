@@ -311,12 +311,7 @@ class EasyApplyBot:
         next_locater = (By.CSS_SELECTOR,
                         "button[aria-label='Continue to next step']")
 
-        
-
-
-
-        input_field = self.browser.find_element("xpath", "//input[contains(@aria-describedby,'phoneNumber')]")
-
+        input_field = self.browser.find_element(By.CSS_SELECTOR, "input.artdeco-text-input--input[type='text']")
 
         if input_field:
             input_field.clear()
@@ -372,9 +367,9 @@ class EasyApplyBot:
                               "button[aria-label='Submit application']")
             submit_application_locator = (By.CSS_SELECTOR,
                                           "button[aria-label='Submit application']")
-            error_locator = (By.CSS_SELECTOR,
-                             "div[data-test-form-element-error-messages]")
-            upload_locator = (By.CSS_SELECTOR, "input[name='file']")
+            error_locator = (By.XPATH,
+                             '//li-icon[@type="error-pebble-icon"]')
+            upload_locator = upload_locator = (By.CSS_SELECTOR, "button[aria-label='DOC, DOCX, PDF formats only (5 MB).']")
             follow_locator = (By.CSS_SELECTOR, "label[for='follow-company-checkbox']")
 
             submitted = False
@@ -387,7 +382,7 @@ class EasyApplyBot:
                                                                upload_locator[1])
                     for input_button in input_buttons:
                         parent = input_button.find_element(By.XPATH, "..")
-                        sibling = parent.find_element(By.XPATH, "preceding-sibling::*")
+                        sibling = parent.find_element(By.XPATH, "preceding-sibling::*[1]")
                         grandparent = sibling.find_element(By.XPATH, "..")
                         for key in self.uploads.keys():
                             sibling_text = sibling.text
@@ -403,14 +398,19 @@ class EasyApplyBot:
                 buttons: list = [next_locater, review_locater, follow_locator,
                            submit_locater, submit_application_locator]
                 for i, button_locator in enumerate(buttons):
+                    log.info("Enumerating buttons")
                     if is_present(button_locator):
                         button: None = self.wait.until(EC.element_to_be_clickable(button_locator))
 
                     if is_present(error_locator):
+                        button = None
+                        break
+                        log.info("checking for error msg")
                         for element in self.browser.find_elements(error_locator[0],
                                                                   error_locator[1]):
                             text = element.text
                             if "Please enter a valid answer" in text:
+                                log.info("error msg found")
                                 button = None
                                 break
                     if button:
