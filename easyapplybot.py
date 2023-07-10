@@ -106,10 +106,15 @@ class EasyApplyBot:
                         '//*[@id="organic-div"]/form/div[3]/button')
             user_field.send_keys(username)
             user_field.send_keys(Keys.TAB)
+            log.debug("sleep 1")
             time.sleep(2)
             pw_field.send_keys(password)
+            log.debug("sleep 2")
+            
             time.sleep(2)
             login_button.click()
+            log.debug("sleep 3")
+            
             time.sleep(3)
         except TimeoutException:
             log.info("TimeoutException! Username/password field or login button not found")
@@ -156,6 +161,8 @@ class EasyApplyBot:
                 # sleep to make sure everything loads, add random to make us look human.
                 randoTime: float = random.uniform(3.5, 4.9)
                 log.debug(f"Sleeping for {round(randoTime, 1)} seconds")
+                log.debug("sleep 4")
+                
                 time.sleep(randoTime)
                 self.load_page(sleep=1)
 
@@ -167,6 +174,7 @@ class EasyApplyBot:
                 # Selenium only detects visible elements; if we scroll to the bottom too fast, only 8-9 results will be loaded into IDs list
                 # for i in range(300, 3000, 100):
                 #     self.browser.execute_script("arguments[0].scrollTo(0, {})".format(i), scrollresults)
+                log.debug("sleep 5")
 
                 time.sleep(1)
 
@@ -224,6 +232,8 @@ class EasyApplyBot:
                             string_easy = "* has Easy Apply Button"
                             log.info("Clicking the EASY apply button")
                             button.click()
+                            log.debug("sleep 6")
+                            
                             time.sleep(3)
                             self.fill_out_phone_number()
                             result: bool = self.send_resume()
@@ -244,6 +254,8 @@ class EasyApplyBot:
                         log.info(f"""********count_application: {count_application}************\n\n
                                     Time for a nap - see you in:{int(sleepTime / 60)} min
                                 ****************************************\n\n""")
+                        log.debug("sleep 7")
+                        
                         time.sleep(sleepTime)
 
                     # go to new page if all jobs are done
@@ -316,6 +328,8 @@ class EasyApplyBot:
         if input_field:
             input_field.clear()
             input_field.send_keys(self.phone_number)
+            log.debug("sleep 8")
+            
             time.sleep(random.uniform(4.5, 6.5))
         
 
@@ -339,6 +353,8 @@ class EasyApplyBot:
                         break
             if button:
                 button.click()
+                log.debug("sleep 9")
+                
                 time.sleep(random.uniform(1.5, 2.5))
                 # if i in (3, 4):
                 #     submitted = True
@@ -358,6 +374,8 @@ class EasyApplyBot:
                                                   button_locator[1])) > 0
 
         try:
+            log.debug("sleep 10")
+            
             time.sleep(random.uniform(1.5, 2.5))
             next_locater = (By.CSS_SELECTOR,
                             "button[aria-label='Continue to next step']")
@@ -391,6 +409,8 @@ class EasyApplyBot:
                                 input_button.send_keys(self.uploads[key])
 
                     # input_button[0].send_keys(self.cover_letter_loctn)
+                    log.debug("sleep 11")
+                    
                     time.sleep(random.uniform(4.5, 6.5))
 
                 # Click Next or submitt button if possible
@@ -415,6 +435,8 @@ class EasyApplyBot:
                                 break
                     if button:
                         button.click()
+                        log.debug("sleep 12")
+                        
                         time.sleep(random.uniform(1.5, 2.5))
                         if i in (3, 4):
                             submitted = True
@@ -426,7 +448,8 @@ class EasyApplyBot:
                 elif submitted:
                     log.info("Application Submitted")
                     break
-
+            log.debug("sleep 13")
+            
             time.sleep(random.uniform(1.5, 2.5))
 
 
@@ -442,10 +465,13 @@ class EasyApplyBot:
         while scroll_page < 4000:
             self.browser.execute_script("window.scrollTo(0," + str(scroll_page) + " );")
             scroll_page += 200
+            log.debug("sleep 14")
             time.sleep(sleep)
 
         if sleep != 1:
             self.browser.execute_script("window.scrollTo(0,0);")
+            log.debug("sleep 15")
+            
             time.sleep(sleep * 3)
 
         page = BeautifulSoup(self.browser.page_source, "lxml")
@@ -458,6 +484,7 @@ class EasyApplyBot:
         pyautogui.keyDown('ctrl')
         pyautogui.press('esc')
         pyautogui.keyUp('ctrl')
+        log.debug("sleep 16")
         time.sleep(0.5)
         pyautogui.press('esc')
 
