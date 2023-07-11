@@ -464,6 +464,16 @@ class EasyApplyBot:
 
     #Checked
     def load_page(self, sleep=1):
+        #TODO scroll on class="jobs-search-results-list (upto y=3500)
+        element = self.browser.find_elements(By.XPATH,"//div[@class='scaffold-layout__list ']/div[starts-with(@class,'jobs-search-results-list')]")
+        if len(element)>0:
+            startPos = 0
+            for i in range(10):
+                startPos+=400
+                self.browser.execute_script("arguments[0].scroll(0,"+str(startPos)+");", element[0])
+                time.sleep(sleep)
+            return
+        
         scroll_page = 0
         while scroll_page < 4000:
             self.browser.execute_script("window.scrollTo(0," + str(scroll_page) + " );")
