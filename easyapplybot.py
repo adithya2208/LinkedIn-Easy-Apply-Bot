@@ -42,6 +42,7 @@ class EasyApplyBot:
     # MAX_SEARCH_TIME is 10 hours by default, feel free to modify it
     MAX_SEARCH_TIME:int = 10 * 60 * 60
 
+    #Checked
     def __init__(self,
                  username,
                  password,
@@ -57,6 +58,7 @@ class EasyApplyBot:
 
         self.uploads = uploads
         past_ids: list | None = self.get_appliedIDs(filename)
+        #From the local output file
         self.appliedJobIDs: list = past_ids if past_ids != None else []
         self.filename: str = filename
         self.options = self.browser_options()
@@ -96,6 +98,7 @@ class EasyApplyBot:
         options.add_argument("--disable-blink-features=AutomationControlled")
         return options
 
+    #Checked
     def start_linkedin(self, username, password) -> None:
         log.info("Logging in.....Please wait   ")
         self.browser.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
@@ -121,12 +124,10 @@ class EasyApplyBot:
         self.browser.set_window_size(1, 1)
         self.browser.set_window_position(2000, 2000)
 
-
+    #Checked
     def start_apply(self, positions, locations) -> None:
-        start: float = time.time()
-        
-
         combos: list = []
+        
         while len(combos) < len(positions) * len(locations):
             position = positions[random.randint(0, len(positions) - 1)]
             location = locations[random.randint(0, len(locations) - 1)]
@@ -144,15 +145,15 @@ class EasyApplyBot:
     def applications_loop(self, position, location):
 
         count_application = 0
-        count_job = 0
-        jobs_per_page = 0
+        count_job = 0 #Something related to 25/jobs per page?
+        startIndex = 0
         start_time: float = time.time()
 
         log.info("Looking for jobs.. Please wait..")
 
         self.browser.set_window_position(1, 1)
         self.browser.maximize_window()
-        self.browser, _ = self.next_jobs_page(position, location, jobs_per_page)
+        self.browser, _ = self.next_jobs_page(position, location, startIndex)
 
         while time.time() - start_time < self.MAX_SEARCH_TIME:
             try:
@@ -201,6 +202,7 @@ class EasyApplyBot:
                             IDs.append(int(jobID))
                 IDs: list = set(IDs)  # type: ignore 
 
+                log.debug(IDs)
                 # remove already applied jobs
                 before: int = len(IDs)
                 jobIDs: list = [x for x in IDs if x not in self.appliedJobIDs]
@@ -208,12 +210,12 @@ class EasyApplyBot:
 
                 # it assumed that 25 jobs are listed in the results window
                 if len(jobIDs) == 0 and len(IDs) > 23:
-                    jobs_per_page = jobs_per_page + 25
+                    startIndex = startIndex + 25
                     count_job = 0
                     self.avoid_lock()
-                    self.browser, jobs_per_page = self.next_jobs_page(position,
+                    self.browser, startIndex = self.next_jobs_page(position,
                                                                     location,
-                                                                    jobs_per_page)
+                                                                    startIndex)
                 # loop over IDs to apply
                 for i, jobID in enumerate(jobIDs):
                     count_job += 1
@@ -243,7 +245,7 @@ class EasyApplyBot:
                         string_easy = "* Doesn't have Easy Apply Button"
                         result = False
 
-                    position_number: str = str(count_job + jobs_per_page)
+                    position_number: str = str(count_job + startIndex)
                     log.info(f"\nPosition {position_number}:\n {self.browser.title} \n {string_easy} \n")
 
                     self.write_to_file(button, jobID, self.browser.title, result)
@@ -260,15 +262,15 @@ class EasyApplyBot:
 
                     # go to new page if all jobs are done
                     if count_job == len(jobIDs):
-                        jobs_per_page = jobs_per_page + 25
+                        startIndex = startIndex + 25
                         count_job = 0
                         log.info("""****************************************\n\n
                         Going to next jobs page, YEAAAHHH!!
                         ****************************************\n\n""")
                         self.avoid_lock()
-                        self.browser, jobs_per_page = self.next_jobs_page(position,
+                        self.browser, startIndex = self.next_jobs_page(position,
                                                                         location,
-                                                                        jobs_per_page)
+                                                                        startIndex)
             except Exception as e:
                 print(e)
 
@@ -460,6 +462,7 @@ class EasyApplyBot:
 
         return submitted
 
+    #Checked
     def load_page(self, sleep=1):
         scroll_page = 0
         while scroll_page < 4000:
@@ -488,14 +491,14 @@ class EasyApplyBot:
         time.sleep(0.5)
         pyautogui.press('esc')
 
-    def next_jobs_page(self, position, location, jobs_per_page):
+    def next_jobs_page(self, position, location, startIndex):
         self.browser.get(
             "https://www.linkedin.com/jobs/search/?f_LF=f_AL&keywords=" +
-            position + location + "&start=" + str(jobs_per_page))
+            position + location + "&start=" + str(startIndex))
         self.avoid_lock()
         log.info("Lock avoided.")
         self.load_page()
-        return (self.browser, jobs_per_page)
+        return (self.browser, startIndex)
 
     def finish_apply(self) -> None:
         self.browser.close()
