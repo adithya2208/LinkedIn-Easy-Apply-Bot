@@ -318,6 +318,7 @@ class EasyApplyBot:
         return EasyApplyButton
 
     def fill_out_phone_number(self):
+        return
         def is_present(button_locator) -> bool:
             return len(self.browser.find_elements(button_locator[0],
                                                   button_locator[1])) > 0
@@ -491,6 +492,7 @@ class EasyApplyBot:
         return page
 
     def avoid_lock(self) -> None:
+        return
         x, _ = pyautogui.position()
         pyautogui.moveTo(x + 200, pyautogui.position().y, duration=1.0)
         pyautogui.moveTo(x, pyautogui.position().y, duration=0.5)
