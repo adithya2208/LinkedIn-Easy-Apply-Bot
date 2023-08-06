@@ -183,7 +183,6 @@ class EasyApplyBot:
 
     def applications_loop(self, position, location):
         startIndex = 0
-
         log.info("Looking for jobs.. Please wait..")
 
         while time.time() - self.start_time < self.MAX_SEARCH_TIME:
@@ -195,8 +194,6 @@ class EasyApplyBot:
                 startIndex += 25
 
                 randoTime = random.uniform(3.5, 4.9)
-                log.debug(f"Sleeping for {round(randoTime, 1)} seconds")
-
                 time.sleep(randoTime)
 
                 links = self.browser.find_elements("xpath", "//div[@data-job-id]")
@@ -205,7 +202,7 @@ class EasyApplyBot:
                     log.debug("No links found")
                     break
 
-                IDs = []
+                jobIds = []
 
                 for link in links:
                     children = link.find_elements(
@@ -215,11 +212,10 @@ class EasyApplyBot:
                         if child.text not in self.blacklist:
                             temp = link.get_attribute("data-job-id")
                             jobID = temp.split(":")[-1]
-                            IDs.append(int(jobID))
-                log.debug("Found " + str(len(IDs)) + " links!")
-                IDs = set(IDs)
-                jobIDs: list = [x for x in IDs if x not in self.appliedJobIDs]
-
+                            jobIds.append(int(jobID))
+                log.debug("Found " + str(len(jobIds)) + " links! (Blacklisted links filtered out)")
+                jobIds = set(jobIds)
+                jobIDs: list = [x for x in jobIds if x not in self.appliedJobIDs]
                 log.debug(
                     "Number of links after removing duplicates: " + str(len(jobIDs))
                 )
@@ -227,6 +223,7 @@ class EasyApplyBot:
                 for i, jobID in enumerate(jobIDs):
                     self.get_job_page(jobID)
                     button = self.get_easy_apply_button()
+                    result=False
                     if button:
                         if any(
                             word in self.browser.title for word in self.blackListTitles
@@ -234,26 +231,22 @@ class EasyApplyBot:
                             log.info(
                                 "skipping this application, a blacklisted keyword was found in the job position"
                             )
-                            result = False
                         else:
                             log.info(
-                                f"\n applicationCount {self.successfulApplicationCount}:\n {self.browser.title}\n"
+                                f"\n successfulApplicationCount {self.successfulApplicationCount}:\n {self.browser.title}\n"
                             )
                             log.info("Clicking the EASY apply button")
                             button.click()
-
                             time.sleep(3)
-                            self.fill_out_phone_number()
-                            result: bool = self.send_resume()
-                            if result:
-                                self.successfulApplicationCount += 1
+                            result = self.send_resume()
                     else:
                         log.info("The button does not exist.")
-                        result = False
 
+                    if result:
+                        self.successfulApplicationCount += 1
+                                
                     self.write_to_file(button, jobID, self.browser.title, result)
 
-                    # sleep every 20 applications
                     if (
                         self.successfulApplicationCount != 0
                         and self.successfulApplicationCount % 7 == 0
@@ -312,61 +305,6 @@ class EasyApplyBot:
 
         return EasyApplyButton
 
-    def fill_out_phone_number(self):
-        return
-
-        def is_present(button_locator) -> bool:
-            return (
-                len(self.browser.find_elements(button_locator[0], button_locator[1]))
-                > 0
-            )
-
-        # try:
-        next_locater = (By.CSS_SELECTOR, "button[aria-label='Continue to next step']")
-
-        input_field = self.browser.find_element(
-            By.CSS_SELECTOR, "input.artdeco-text-input--input[type='text']"
-        )
-
-        if input_field:
-            input_field.clear()
-            input_field.send_keys(self.phone_number)
-
-            time.sleep(random.uniform(4.5, 6.5))
-
-            next_locater = (
-                By.CSS_SELECTOR,
-                "button[aria-label='Continue to next step']",
-            )
-            error_locator = (
-                By.CSS_SELECTOR,
-                "p[data-test-form-element-error-message='true']",
-            )
-
-            # Click Next or submitt button if possible
-            button: None = None
-            if is_present(next_locater):
-                button: None = self.wait.until(EC.element_to_be_clickable(next_locater))
-
-            if is_present(error_locator):
-                for element in self.browser.find_elements(
-                    error_locator[0], error_locator[1]
-                ):
-                    text = element.text
-                    if "Please enter a valid answer" in text:
-                        button = None
-                        break
-            if button:
-                button.click()
-
-                time.sleep(random.uniform(1.5, 2.5))
-                # if i in (3, 4):
-                #     submitted = True
-                # if i != 2:
-                #     break
-
-        else:
-            log.debug(f"Could not find phone number field")
 
     def send_resume(self) -> bool:
         def is_present(button_locator) -> bool:
@@ -507,16 +445,6 @@ class EasyApplyBot:
         page = BeautifulSoup(self.browser.page_source, "lxml")
         return page
 
-    def avoid_lock(self) -> None:
-        return
-        x, _ = pyautogui.position()
-        pyautogui.moveTo(x + 200, pyautogui.position().y, duration=1.0)
-        pyautogui.moveTo(x, pyautogui.position().y, duration=0.5)
-        pyautogui.keyDown("ctrl")
-        pyautogui.press("esc")
-        pyautogui.keyUp("ctrl")
-        time.sleep(0.5)
-        pyautogui.press("esc")
 
     def next_jobs_page(self, position, location, startIndex):
         self.browser.get(
@@ -526,12 +454,6 @@ class EasyApplyBot:
             + "&start="
             + str(startIndex)
         )
-        self.avoid_lock()
-        log.info("Lock avoided.")
-        self.load_page()
-
-    def finish_apply(self) -> None:
-        self.browser.close()
 
 
 if __name__ == "__main__":
