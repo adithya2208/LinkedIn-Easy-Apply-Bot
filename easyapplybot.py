@@ -191,7 +191,6 @@ class EasyApplyBot:
                     f"{(self.MAX_SEARCH_TIME - (time.time() - self.start_time)) // 60} minutes left in this search"
                 )
                 self.next_jobs_page(position, location, startIndex)
-                startIndex += 25
 
                 randoTime = random.uniform(3.5, 4.9)
                 time.sleep(randoTime)
@@ -214,6 +213,7 @@ class EasyApplyBot:
                             jobID = temp.split(":")[-1]
                             jobIds.append(int(jobID))
                 log.debug("Found " + str(len(jobIds)) + " links! (Blacklisted links filtered out)")
+                startIndex+=len(jobIDs)
                 jobIds = set(jobIds)
                 jobIDs: list = [x for x in jobIds if x not in self.appliedJobIDs]
                 log.debug(
@@ -308,6 +308,7 @@ class EasyApplyBot:
 
     def send_resume(self) -> bool:
         def is_present(button_locator) -> bool:
+            log.debug(button_locator)
             return (
                 len(self.browser.find_elements(button_locator[0], button_locator[1]))
                 > 0
@@ -341,6 +342,7 @@ class EasyApplyBot:
 
             submitted = False
             while True:
+                log.debug("Loop")
                 # Upload Cover Letter if possible
                 if is_present(upload_locator):
                     input_buttons = self.browser.find_elements(
@@ -383,17 +385,9 @@ class EasyApplyBot:
                     if is_present(error_locator):
                         button = None
                         break
-                        log.info("checking for error msg")
-                        for element in self.browser.find_elements(
-                            error_locator[0], error_locator[1]
-                        ):
-                            text = element.text
-                            if "Please enter a valid answer" in text:
-                                log.info("error msg found")
-                                button = None
-                                break
+                    
                     if button:
-
+                        button.click()
                         time.sleep(random.uniform(1.5, 2.5))
                         if i in (3, 4):
                             submitted = True
