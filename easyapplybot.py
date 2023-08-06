@@ -15,7 +15,7 @@ import pyautogui
 from datetime import datetime, timedelta
 
 
-def setupLogger(log) -> None:
+def setupLogger(log) :
     dt: str = datetime.strftime(datetime.now(), "%d_%m_%y %H_%M_%S ")
 
     if not os.path.isdir("./logs"):
@@ -173,7 +173,7 @@ class EasyApplyBot:
                 "TimeoutException! Username/password field or login button not found"
             )
 
-    def start_apply(self) -> None:
+    def start_apply(self):
         combos = [(a, b) for a in self.positions for b in self.locations]
         random.shuffle(combos)
         for item in combos:
@@ -196,7 +196,6 @@ class EasyApplyBot:
 
                 randoTime = random.uniform(3.5, 4.9)
                 log.debug(f"Sleeping for {round(randoTime, 1)} seconds")
-                log.debug("sleep 4")
 
                 time.sleep(randoTime)
 
@@ -242,7 +241,6 @@ class EasyApplyBot:
                             )
                             log.info("Clicking the EASY apply button")
                             button.click()
-                            log.debug("sleep 6")
 
                             time.sleep(3)
                             self.fill_out_phone_number()
@@ -266,7 +264,6 @@ class EasyApplyBot:
                                     Time for a nap - see you in:{int(sleepTime / 60)} min
                                 ****************************************\n\n"""
                         )
-                        log.debug("sleep 7")
 
                         time.sleep(sleepTime)
             except Exception as e:
@@ -334,7 +331,6 @@ class EasyApplyBot:
         if input_field:
             input_field.clear()
             input_field.send_keys(self.phone_number)
-            log.debug("sleep 8")
 
             time.sleep(random.uniform(4.5, 6.5))
 
@@ -362,7 +358,6 @@ class EasyApplyBot:
                         break
             if button:
                 button.click()
-                log.debug("sleep 9")
 
                 time.sleep(random.uniform(1.5, 2.5))
                 # if i in (3, 4):
@@ -381,7 +376,6 @@ class EasyApplyBot:
             )
 
         try:
-            log.debug("sleep 10")
 
             time.sleep(random.uniform(1.5, 2.5))
             next_locater = (
@@ -430,7 +424,6 @@ class EasyApplyBot:
                                 input_button.send_keys(self.uploads[key])
 
                     # input_button[0].send_keys(self.cover_letter_loctn)
-                    log.debug("sleep 11")
 
                     time.sleep(random.uniform(4.5, 6.5))
 
@@ -444,7 +437,6 @@ class EasyApplyBot:
                     submit_application_locator,
                 ]
                 for i, button_locator in enumerate(buttons):
-                    log.info("Enumerating buttons")
                     if is_present(button_locator):
                         button: None = self.wait.until(
                             EC.element_to_be_clickable(button_locator)
@@ -463,8 +455,6 @@ class EasyApplyBot:
                                 button = None
                                 break
                     if button:
-                        button.click()
-                        log.debug("sleep 12")
 
                         time.sleep(random.uniform(1.5, 2.5))
                         if i in (3, 4):
@@ -477,7 +467,6 @@ class EasyApplyBot:
                 elif submitted:
                     log.info("Application Submitted")
                     break
-            log.debug("sleep 13")
 
             time.sleep(random.uniform(1.5, 2.5))
 
@@ -508,12 +497,10 @@ class EasyApplyBot:
         while scroll_page < 4000:
             self.browser.execute_script("window.scrollTo(0," + str(scroll_page) + " );")
             scroll_page += 200
-            log.debug("sleep 14")
             time.sleep(sleep)
 
         if sleep != 1:
             self.browser.execute_script("window.scrollTo(0,0);")
-            log.debug("sleep 15")
 
             time.sleep(sleep * 3)
 
@@ -528,7 +515,6 @@ class EasyApplyBot:
         pyautogui.keyDown("ctrl")
         pyautogui.press("esc")
         pyautogui.keyUp("ctrl")
-        log.debug("sleep 16")
         time.sleep(0.5)
         pyautogui.press("esc")
 
