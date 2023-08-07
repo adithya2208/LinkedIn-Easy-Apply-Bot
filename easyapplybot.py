@@ -15,7 +15,7 @@ import pyautogui
 from datetime import datetime, timedelta
 
 
-def setupLogger(log) :
+def setupLogger(log):
     dt: str = datetime.strftime(datetime.now(), "%d_%m_%y %H_%M_%S ")
 
     if not os.path.isdir("./logs"):
@@ -210,20 +210,24 @@ class EasyApplyBot:
                     for child in children:
                         if child.text not in self.blacklist:
                             temp = link.get_attribute("data-job-id")
-                            jobID = temp.split(":")[-1]
-                            jobIds.append(int(jobID))
-                log.debug("Found " + str(len(jobIds)) + " links! (Blacklisted links filtered out)")
-                startIndex+=len(jobIDs)
-                jobIds = set(jobIds)
-                jobIDs: list = [x for x in jobIds if x not in self.appliedJobIDs]
+                            jobId = temp.split(":")[-1]
+                            jobIds.append(int(jobId))
                 log.debug(
-                    "Number of links after removing duplicates: " + str(len(jobIDs))
+                    "Found "
+                    + str(len(jobIds))
+                    + " links! (Blacklisted links filtered out)"
+                )
+                startIndex += len(jobIds)
+                jobIds = set(jobIds)
+                jobIds: list = [x for x in jobIds if x not in self.appliedJobIDs]
+                log.debug(
+                    "Number of links after removing duplicates: " + str(len(jobIds))
                 )
 
-                for i, jobID in enumerate(jobIDs):
-                    self.get_job_page(jobID)
+                for i, jobId in enumerate(jobIds):
+                    self.get_job_page(jobId)
                     button = self.get_easy_apply_button()
-                    result=False
+                    result = False
                     if button:
                         if any(
                             word in self.browser.title for word in self.blackListTitles
@@ -244,8 +248,8 @@ class EasyApplyBot:
 
                     if result:
                         self.successfulApplicationCount += 1
-                                
-                    self.write_to_file(button, jobID, self.browser.title, result)
+
+                    self.write_to_file(button, jobId, self.browser.title, result)
 
                     if (
                         self.successfulApplicationCount != 0
@@ -305,17 +309,14 @@ class EasyApplyBot:
 
         return EasyApplyButton
 
-
     def send_resume(self) -> bool:
         def is_present(button_locator) -> bool:
-            log.debug(button_locator)
             return (
                 len(self.browser.find_elements(button_locator[0], button_locator[1]))
                 > 0
             )
 
         try:
-
             time.sleep(random.uniform(1.5, 2.5))
             next_locater = (
                 By.CSS_SELECTOR,
@@ -342,7 +343,6 @@ class EasyApplyBot:
 
             submitted = False
             while True:
-                log.debug("Loop")
                 # Upload Cover Letter if possible
                 if is_present(upload_locator):
                     input_buttons = self.browser.find_elements(
@@ -385,7 +385,7 @@ class EasyApplyBot:
                     if is_present(error_locator):
                         button = None
                         break
-                    
+
                     if button:
                         button.click()
                         time.sleep(random.uniform(1.5, 2.5))
@@ -438,7 +438,6 @@ class EasyApplyBot:
 
         page = BeautifulSoup(self.browser.page_source, "lxml")
         return page
-
 
     def next_jobs_page(self, position, location, startIndex):
         self.browser.get(
