@@ -109,7 +109,7 @@ class EasyApplyBot:
         self.locations = locations
 
         self.start_time = time.time()
-        self.successfulApplicationCount = 0
+        self.applicationCount = 0
 
     def get_appliedIDs(self, filename):
         try:
@@ -237,7 +237,7 @@ class EasyApplyBot:
                             )
                         else:
                             log.info(
-                                f"\n successfulApplicationCount {self.successfulApplicationCount}:\n {self.browser.title}\n"
+                                f"\n successfulApplicationCount {self.applicationCount}:\n {self.browser.title}\n"
                             )
                             log.info("Clicking the EASY apply button")
                             button.click()
@@ -246,18 +246,14 @@ class EasyApplyBot:
                     else:
                         log.info("The button does not exist.")
 
-                    if result:
-                        self.successfulApplicationCount += 1
+                    self.applicationCount += 1
 
                     self.write_to_file(button, jobId, self.browser.title, result)
 
-                    if (
-                        self.successfulApplicationCount != 0
-                        and self.successfulApplicationCount % 7 == 0
-                    ):
+                    if self.applicationCount != 0 and self.applicationCount % 40 == 0:
                         sleepTime: int = random.randint(500, 900)
                         log.info(
-                            f"""********count_application: {self.successfulApplicationCount}************\n\n
+                            f"""********count_application: {self.applicationCount}************\n\n
                                     Time for a nap - see you in:{int(sleepTime / 60)} min
                                 ****************************************\n\n"""
                         )
