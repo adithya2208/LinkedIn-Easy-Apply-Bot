@@ -178,8 +178,8 @@ class EasyApplyBot:
         random.shuffle(combos)
         for item in combos:
             log.info(f"Applying to {item[0]}: {item[1]}")
-            location = "&location=" + item[1]
-            self.applications_loop(item[0], location)
+            location = "&location=" + item[0]
+            self.applications_loop(item[1], location)
 
     def applications_loop(self, position, location):
         startIndex = 0
@@ -237,7 +237,7 @@ class EasyApplyBot:
                             )
                         else:
                             log.info(
-                                f"\n successfulApplicationCount {self.applicationCount}:\n {self.browser.title}\n"
+                                f"\n Application count {self.applicationCount}:\n {self.browser.title}\n"
                             )
                             log.info("Clicking the EASY apply button")
                             button.click()
