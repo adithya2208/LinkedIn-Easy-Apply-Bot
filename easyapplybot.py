@@ -163,10 +163,8 @@ class EasyApplyBot:
             user_field.send_keys(Keys.TAB)
             time.sleep(2)
             pw_field.send_keys(password)
-
             time.sleep(2)
             login_button.click()
-
             time.sleep(3)
         except TimeoutException:
             log.info(
@@ -191,9 +189,6 @@ class EasyApplyBot:
                     f"{(self.MAX_SEARCH_TIME - (time.time() - self.start_time)) // 60} minutes left in this search"
                 )
                 self.next_jobs_page(position, location, startIndex)
-
-                randoTime = random.uniform(3.5, 4.9)
-                time.sleep(randoTime)
 
                 links = self.browser.find_elements("xpath", "//div[@data-job-id]")
 
@@ -443,6 +438,7 @@ class EasyApplyBot:
             + "&start="
             + str(startIndex)
         )
+        time.sleep(2)
 
 
 if __name__ == "__main__":
