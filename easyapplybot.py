@@ -283,6 +283,7 @@ class EasyApplyBot:
 
     def get_job_page(self, jobID):
         job: str = "https://www.linkedin.com/jobs/view/" + str(jobID)
+        log.debug(f"Loading {job}")
         self.browser.get(job)
         time.sleep(2)
         return
@@ -401,7 +402,6 @@ class EasyApplyBot:
         return submitted
 
     def load_page(self, sleep=1):
-        # TODO scroll on class="jobs-search-results-list (upto y=3500)
         element = self.browser.find_elements(
             By.XPATH,
             "//div[@class='scaffold-layout__list ']/div[starts-with(@class,'jobs-search-results-list')]",
@@ -431,13 +431,9 @@ class EasyApplyBot:
         return page
 
     def next_jobs_page(self, position, location, startIndex):
-        self.browser.get(
-            "https://www.linkedin.com/jobs/search/?f_LF=f_AL&keywords="
-            + position
-            + location
-            + "&start="
-            + str(startIndex)
-        )
+        url =  "https://www.linkedin.com/jobs/search/?f_LF=f_AL&keywords="+ position+ location+ "&start="+ str(startIndex)
+        log.debug(f"Loading {url}")
+        self.browser.get(url)
         time.sleep(2)
 
 
