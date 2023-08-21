@@ -221,6 +221,9 @@ class EasyApplyBot:
 
                 for i, jobId in enumerate(jobIds):
                     self.get_job_page(jobId)
+                    log.info(
+                        f"\n Application count {self.applicationCount}:\n {self.browser.title}\n"
+                    )
                     button = self.get_easy_apply_button()
                     result = False
                     if button:
@@ -231,9 +234,6 @@ class EasyApplyBot:
                                 "skipping this application, a blacklisted keyword was found in the job position"
                             )
                         else:
-                            log.info(
-                                f"\n Application count {self.applicationCount}:\n {self.browser.title}\n"
-                            )
                             log.info("Clicking the EASY apply button")
                             button.click()
                             time.sleep(3)
