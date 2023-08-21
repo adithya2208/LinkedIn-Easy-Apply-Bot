@@ -195,7 +195,7 @@ class EasyApplyBot:
                 if len(links) == 0:
                     log.debug("No links found")
                     break
-
+                startIndex += len(links)
                 jobIds = []
 
                 for link in links:
@@ -212,14 +212,13 @@ class EasyApplyBot:
                     + str(len(jobIds))
                     + " links! (Blacklisted links filtered out)"
                 )
-                startIndex += len(jobIds)
                 jobIds = set(jobIds)
                 jobIds: list = [x for x in jobIds if x not in self.appliedJobIDs]
                 log.debug(
                     "Number of links after removing duplicates: " + str(len(jobIds))
                 )
 
-                for i, jobId in enumerate(jobIds):
+                for _, jobId in enumerate(jobIds):
                     self.get_job_page(jobId)
                     log.info(
                         f"\n Application count {self.applicationCount}:\n {self.browser.title}\n"
@@ -239,7 +238,7 @@ class EasyApplyBot:
                             time.sleep(3)
                             result = self.send_resume()
                     else:
-                        log.info("The button does not exist.")
+                        log.info("The Easy Apply button does not exist.")
 
                     self.applicationCount += 1
 
