@@ -16,13 +16,13 @@ from datetime import datetime, timedelta
 
 
 def setupLogger(log):
-    dt: str = datetime.strftime(datetime.now(), "%d_%m_%y %H_%M_%S ")
+    dt = datetime.strftime(datetime.now(), "%d_%m_%y %H_%M_%S ")
 
     if not os.path.isdir("./logs"):
         os.mkdir("./logs")
 
     logging.basicConfig(
-        filename=("./logs/" + str(dt) + "applyJobs.log"),
+        filename=("./logs/" + dt + "applyJobs.log"),
         filemode="w",
         format="%(asctime)s::%(name)s::%(levelname)s::%(message)s",
         datefmt="./logs/%d-%b-%y %H:%M:%S",
@@ -431,7 +431,13 @@ class EasyApplyBot:
         return page
 
     def next_jobs_page(self, position, location, startIndex):
-        url =  "https://www.linkedin.com/jobs/search/?f_LF=f_AL&keywords="+ position+ location+ "&start="+ str(startIndex)
+        url = (
+            "https://www.linkedin.com/jobs/search/?f_LF=f_AL&keywords="
+            + position
+            + location
+            + "&start="
+            + str(startIndex)
+        )
         log.debug(f"Loading {url}")
         self.browser.get(url)
         time.sleep(2)
