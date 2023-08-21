@@ -220,6 +220,7 @@ class EasyApplyBot:
 
                 for _, jobId in enumerate(jobIds):
                     self.get_job_page(jobId)
+                    self.applicationCount += 1
                     log.info(
                         f"\n Application count {self.applicationCount}:\n {self.browser.title}\n"
                     )
@@ -239,8 +240,6 @@ class EasyApplyBot:
                             result = self.send_resume()
                     else:
                         log.info("The Easy Apply button does not exist.")
-
-                    self.applicationCount += 1
 
                     self.write_to_file(button, jobId, self.browser.title, result)
 
@@ -284,7 +283,7 @@ class EasyApplyBot:
         job = "https://www.linkedin.com/jobs/view/" + str(jobID)
         log.info(f"Loading {job}")
         self.browser.get(job)
-        time.sleep(2)
+        time.sleep(5)
         return
 
     def get_easy_apply_button(self):
