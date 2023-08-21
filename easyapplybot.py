@@ -30,7 +30,7 @@ def setupLogger(log):
     log.setLevel(logging.DEBUG)
 
     consoleHandler = logging.StreamHandler()
-    consoleHandler.setLevel(logging.DEBUG)
+    consoleHandler.setLevel(logging.INFO)
     consoleFormat = logging.Formatter(
         "%(asctime)s - %(levelname)s - %(message)s", "%H:%M:%S"
     )
@@ -73,7 +73,7 @@ def readParameters():
 
 class EasyApplyBot:
     # MAX_SEARCH_TIME is 10 hours by default, feel free to modify it
-    MAX_SEARCH_TIME: int = 10 * 60 * 60
+    MAX_SEARCH_TIME: int = 5 * 60 * 60
 
     def __init__(
         self,
@@ -88,7 +88,7 @@ class EasyApplyBot:
         locations=[],
     ) -> None:
         self.browser = webdriver.Chrome(
-            ChromeDriverManager(version="114.0.5735.90").install(),
+            ChromeDriverManager().install(),
             options=self.browser_options(),
         )
         self.wait = WebDriverWait(self.browser, 30)
@@ -282,8 +282,8 @@ class EasyApplyBot:
             writer.writerow(toWrite)
 
     def get_job_page(self, jobID):
-        job: str = "https://www.linkedin.com/jobs/view/" + str(jobID)
-        log.debug(f"Loading {job}")
+        job = "https://www.linkedin.com/jobs/view/" + str(jobID)
+        log.info(f"Loading {job}")
         self.browser.get(job)
         time.sleep(2)
         return
@@ -401,35 +401,6 @@ class EasyApplyBot:
 
         return submitted
 
-    def load_page(self, sleep=1):
-        element = self.browser.find_elements(
-            By.XPATH,
-            "//div[@class='scaffold-layout__list ']/div[starts-with(@class,'jobs-search-results-list')]",
-        )
-        if len(element) > 0:
-            startPos = 0
-            for i in range(10):
-                startPos += 400
-                self.browser.execute_script(
-                    "arguments[0].scroll(0," + str(startPos) + ");", element[0]
-                )
-                time.sleep(sleep)
-            return
-
-        scroll_page = 0
-        while scroll_page < 4000:
-            self.browser.execute_script("window.scrollTo(0," + str(scroll_page) + " );")
-            scroll_page += 200
-            time.sleep(sleep)
-
-        if sleep != 1:
-            self.browser.execute_script("window.scrollTo(0,0);")
-
-            time.sleep(sleep * 3)
-
-        page = BeautifulSoup(self.browser.page_source, "lxml")
-        return page
-
     def next_jobs_page(self, position, location, startIndex):
         url = (
             "https://www.linkedin.com/jobs/search/?f_LF=f_AL&keywords="
@@ -438,7 +409,7 @@ class EasyApplyBot:
             + "&start="
             + str(startIndex)
         )
-        log.debug(f"Loading {url}")
+        log.info(f"Loading {url}")
         self.browser.get(url)
         time.sleep(2)
 
