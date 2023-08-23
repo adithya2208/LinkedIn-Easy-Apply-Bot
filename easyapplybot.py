@@ -400,8 +400,10 @@ class EasyApplyBot:
         return submitted
 
     def next_jobs_page(self, position, location, startIndex):
+        # f_AL=true means Easy Apply
+        # f_WT=2 means remote
         url = (
-            "https://www.linkedin.com/jobs/search/?f_LF=f_AL&keywords="
+            "https://www.linkedin.com/jobs/search/?f_AL=true&f_WT=2&keywords="
             + position
             + location
             + "&start="
