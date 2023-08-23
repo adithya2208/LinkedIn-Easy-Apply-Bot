@@ -110,6 +110,7 @@ class EasyApplyBot:
 
         self.start_time = time.time()
         self.applicationCount = 0
+        self.successfulApplicationCount = 0
 
     def get_appliedIDs(self, filename):
         try:
@@ -221,9 +222,6 @@ class EasyApplyBot:
                 for _, jobId in enumerate(jobIds):
                     self.get_job_page(jobId)
                     self.applicationCount += 1
-                    log.info(
-                        f"\n Application count {self.applicationCount}:\n {self.browser.title}\n"
-                    )
                     button = self.get_easy_apply_button()
                     result = False
                     if button:
@@ -241,8 +239,13 @@ class EasyApplyBot:
                     else:
                         log.info("The Easy Apply button does not exist.")
 
+                    if result:
+                        self.successfulApplicationCount += 1
                     self.write_to_file(button, jobId, self.browser.title, result)
 
+                    log.info(
+                        f"\n Application count {self.successfulApplicationCount}/{self.applicationCount}"
+                    )
                     if self.applicationCount != 0 and self.applicationCount % 40 == 0:
                         sleepTime: int = random.randint(500, 900)
                         log.info(
