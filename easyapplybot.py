@@ -7,11 +7,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait  # type: ignore
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 
-from bs4 import BeautifulSoup
 import pandas as pd
-import pyautogui
 from datetime import datetime, timedelta
 
 
@@ -328,38 +325,13 @@ class EasyApplyBot:
                 "button[aria-label='Submit application']",
             )
             error_locator = (By.XPATH, '//li-icon[@type="error-pebble-icon"]')
-            upload_locator = upload_locator = (
-                By.CSS_SELECTOR,
-                "button[aria-label='DOC, DOCX, PDF formats only (5 MB).']",
+            follow_locator = (
+                By.XPATH,
+                '//*[@name="followCompanyCheckbox"]/following-sibling::*[1]',
             )
-            follow_locator = (By.CSS_SELECTOR, "label[for='follow-company-checkbox']")
 
             submitted = False
             while True:
-                # Upload Cover Letter if possible
-                if is_present(upload_locator):
-                    input_buttons = self.browser.find_elements(
-                        upload_locator[0], upload_locator[1]
-                    )
-                    for input_button in input_buttons:
-                        parent = input_button.find_element(By.XPATH, "..")
-                        sibling = parent.find_element(
-                            By.XPATH, "preceding-sibling::*[1]"
-                        )
-                        grandparent = sibling.find_element(By.XPATH, "..")
-                        for key in self.uploads.keys():
-                            sibling_text = sibling.text
-                            gparent_text = grandparent.text
-                            if (
-                                key.lower() in sibling_text.lower()
-                                or key in gparent_text.lower()
-                            ):
-                                input_button.send_keys(self.uploads[key])
-
-                    # input_button[0].send_keys(self.cover_letter_loctn)
-
-                    time.sleep(random.uniform(4.5, 6.5))
-
                 # Click Next or submitt button if possible
                 button: None = None
                 buttons: list = [
